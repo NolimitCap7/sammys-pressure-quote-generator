@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sammy's Pressure — Instant Quote</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      padding: 40px 20px 60px;
+    }
+
+    /* ── Header ── */
+    header { text-align: center; margin-bottom: 28px; }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: #e2c97e;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    header .tagline {
+      color: #aaa;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+
+    header .phone-header {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #e2c97e;
+    }
+
+    header .phone-header a {
+      color: #e2c97e;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    /* ── Trust badges ── */
+    #trust-badges {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-width: 640px;
+      margin: 0 auto 32px auto;
+    }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #16213e;
+      border: 1px solid #4a3728;
+      border-radius: 999px;
+      padding: 7px 16px;
+      font-size: 0.8rem;
+      color: #ccc;
+      white-space: nowrap;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #16213e;
+      border: 1px solid #4a3728;
+      border-radius: 12px;
+      padding: 28px;
+      max-width: 620px;
+      margin: 0 auto 24px auto;
+    }
+
+    .card-title {
+      color: #e2c97e;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: #bbb;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 11px 14px;
+      background: #0f3460;
+      border: 1px solid #4a3728;
+      border-radius: 6px;
+      color: #eee;
+      font-family: 'Georgia', serif;
+      font-size: 0.95rem;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #e2c97e;
+    }
+
+    select option { background: #0f3460; }
+
+    .checkboxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #ccc;
+      cursor: pointer;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #e2c97e;
+      cursor: pointer;
+    }
+
+    /* ── Photo upload ── */
+    #photo-drop {
+      border: 2px dashed #4a3728;
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+
+    #photo-drop:hover, #photo-drop.drag-over {
+      border-color: #e2c97e;
+      background: rgba(226,201,126,0.04);
+    }
+
+    #photo-drop p {
+      color: #888;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    #photo-drop .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+
+    #photo-input { display: none; }
+
+    #photo-preview-wrap { display: none; margin-top: 12px; }
+
+    #photo-preview {
+      max-width: 100%;
+      max-height: 180px;
+      border-radius: 6px;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #photo-clear {
+      display: block;
+      margin: 8px auto 0;
+      background: transparent;
+      border: 1px solid #4a3728;
+      color: #aaa;
+      font-size: 0.78rem;
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Georgia', serif;
+    }
+
+    #photo-clear:hover { border-color: #e74c3c; color: #e74c3c; }
+
+    .ai-photo-note {
+      font-size: 0.75rem;
+      color: #e2c97e;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* ── Submit ── */
+    #submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: #e2c97e;
+      color: #1a1a2e;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Georgia', serif;
+      font-size: 1.05rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    #submit-btn:hover { background: #d4b96a; transform: translateY(-1px); }
+    #submit-btn:active { transform: translateY(0); }
+    #submit-btn:disabled { background: #555; cursor: not-allowed; transform: none; }
+
+    /* ── Spinner ── */
+    #loading { display: none; text-align: center; padding: 30px; color: #aaa; }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #4a3728;
+      border-top-color: #e2c97e;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Quote result ── */
+    #result { display: none; max-width: 620px; margin: 0 auto; }
+    #result .card { border-color: #e2c97e33; }
+
+    .price-hero {
+      text-align: center;
+      padding: 24px 0 20px;
+      border-bottom: 1px solid #4a3728;
+      margin-bottom: 24px;
+    }
+
+    .price-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+
+    .price-amount {
+      font-size: 3.5rem;
+      color: #e2c97e;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    /* Surface condition callout (only shown when photo uploaded) */
+    #condition-box {
+      display: none;
+      background: #0f3460;
+      border-left: 3px solid #7ecde2;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      color: #ccc;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    #condition-box strong { color: #7ecde2; }
+
+    .result-section { margin-bottom: 20px; }
+
+    .result-section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #e2c97e;
+      margin-bottom: 10px;
+    }
+
+    .includes-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .includes-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.92rem;
+      color: #ddd;
+      line-height: 1.5;
+    }
+
+    .includes-list li::before {
+      content: '✓';
+      color: #e2c97e;
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .info-row { display: flex; gap: 16px; margin-bottom: 12px; }
+
+    .info-box {
+      flex: 1;
+      background: #0f3460;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .info-box-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #aaa;
+      margin-bottom: 5px;
+    }
+
+    .info-box-value { font-size: 0.95rem; color: #eee; font-weight: bold; }
+
+    .time-savings {
+      background: #0f3460;
+      border-left: 3px solid #e2c97e;
+      border-radius: 0 8px 8px 0;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .time-savings strong { color: #e2c97e; }
+
+    /* CTA */
+    .cta-section {
+      border-top: 1px solid #4a3728;
+      padding-top: 22px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .cta-summary {
+      font-size: 0.95rem;
+      color: #bbb;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .cta-btn {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      background: #e2c97e;
+      color: #1a1a2e;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Georgia', serif;
+      font-size: 1.15rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-bottom: 10px;
+      text-decoration: none;
+    }
+
+    .cta-btn:hover { background: #d4b96a; transform: translateY(-1px); }
+
+    .cta-sub { font-size: 0.78rem; color: #777; margin-bottom: 16px; }
+
+    .secondary-actions { display: flex; gap: 10px; margin-top: 4px; }
+
+    .secondary-actions button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      font-family: 'Georgia', serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: 1px solid #4a3728;
+      background: transparent;
+      color: #aaa;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .secondary-actions button:hover { border-color: #e2c97e; color: #e2c97e; }
+
+    /* Error */
+    #error-msg {
+      display: none;
+      color: #e74c3c;
+      background: #16213e;
+      border: 1px solid #e74c3c;
+      border-radius: 8px;
+      padding: 14px 18px;
+      max-width: 620px;
+      margin: 0 auto;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Sammy's Pressure</h1>
+    <p class="tagline">Get an instant quote — no phone call needed</p>
+    <p class="phone-header">Questions? Call us: <a href="tel:+15047775117">(504) 777-5117</a></p>
+  </header>
+
+  <div id="trust-badges">
+    <div class="badge">🛡️ Licensed &amp; Insured</div>
+    <div class="badge">⭐ 5-Star Rated</div>
+    <div class="badge">✅ Satisfaction Guaranteed</div>
+    <div class="badge">📅 Same-Week Availability</div>
+  </div>
+
+  <!-- Form -->
+  <div class="card">
+    <div class="card-title">Tell Us About the Job</div>
+    <form id="quote-form">
+
+      <div class="form-group">
+        <label for="serviceType">What do you need cleaned?</label>
+        <select id="serviceType" required>
+          <option value="" disabled selected>Select a service…</option>
+          <option>House / Exterior Wash</option>
+          <option>Driveway Cleaning</option>
+          <option>Deck / Patio Cleaning</option>
+          <option>Roof Soft Wash</option>
+          <option>Fence Cleaning</option>
+          <option>Commercial Property</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="surfaceType">Surface Material</label>
+        <select id="surfaceType" required>
+          <option value="" disabled selected>Select a material…</option>
+          <option>Concrete</option>
+          <option>Brick</option>
+          <option>Vinyl Siding</option>
+          <option>Wood</option>
+          <option>Asphalt Shingles</option>
+          <option>Stucco</option>
+          <option>Stone / Pavers</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="surfaceSize">Approximate Size (square feet)</label>
+        <input type="number" id="surfaceSize" placeholder="e.g. 500" min="1" required />
+      </div>
+
+      <div class="form-group">
+        <label for="location">Your Location (City, State)</label>
+        <input type="text" id="location" placeholder="e.g. New Orleans, LA" required />
+      </div>
+
+      <!-- Photo upload -->
+      <div class="form-group">
+        <label>Upload a Photo <span style="color:#777; text-transform:none; font-size:0.75rem;">(optional — helps us give a more accurate quote)</span></label>
+        <div id="photo-drop" onclick="document.getElementById('photo-input').click()">
+          <div class="upload-icon">📷</div>
+          <p>Click to upload or drag &amp; drop a photo of the surface<br/>
+          <span style="font-size:0.78rem; color:#666;">JPG, PNG, WEBP · max 10MB</span></p>
+        </div>
+        <input type="file" id="photo-input" accept="image/jpeg,image/png,image/webp" />
+        <div id="photo-preview-wrap">
+          <img id="photo-preview" src="" alt="Surface preview" />
+          <button type="button" id="photo-clear">✕ Remove photo</button>
+          <p class="ai-photo-note" id="ai-photo-note">🤖 AI will analyze this photo to assess surface condition</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Add-On Services (optional)</label>
+        <div class="checkboxes">
+          <label class="checkbox-item"><input type="checkbox" value="Gutter cleaning" /> Gutter Cleaning</label>
+          <label class="checkbox-item"><input type="checkbox" value="Sealing / protective coating" /> Sealing / Coating</label>
+          <label class="checkbox-item"><input type="checkbox" value="Rust stain removal" /> Rust Stain Removal</label>
+          <label class="checkbox-item"><input type="checkbox" value="Mold and mildew treatment" /> Mold Treatment</label>
+          <label class="checkbox-item"><input type="checkbox" value="Window cleaning" /> Window Cleaning</label>
+          <label class="checkbox-item"><input type="checkbox" value="Same-day service" /> Same-Day Service</label>
+        </div>
+      </div>
+
+      <button type="submit" id="submit-btn">Get My Free Instant Quote →</button>
+    </form>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <p id="loading-text">Calculating your quote…</p>
+  </div>
+
+  <div id="error-msg"></div>
+
+  <!-- Result -->
+  <div id="result">
+    <div class="card">
+
+      <div class="price-hero">
+        <div class="price-label">Your Estimate from Sammy's Pressure</div>
+        <div class="price-amount" id="price-amount">$0</div>
+      </div>
+
+      <!-- AI surface condition (only when photo uploaded) -->
+      <div id="condition-box">
+        <strong>🤖 AI Surface Assessment:</strong> <span id="condition-text"></span>
+      </div>
+
+      <div class="result-section">
+        <div class="result-section-title">What You Get</div>
+        <ul class="includes-list" id="includes-list"></ul>
+      </div>
+
+      <div class="result-section">
+        <div class="result-section-title">Your Time</div>
+        <div class="info-row">
+          <div class="info-box">
+            <div class="info-box-label">We Handle It In</div>
+            <div class="info-box-value" id="duration-value">—</div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">Doing It Yourself</div>
+            <div class="info-box-value">Half your weekend</div>
+          </div>
+        </div>
+        <div class="time-savings">
+          <strong>Your Saturday back:</strong> <span id="time-savings-text"></span>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <div class="cta-summary" id="cta-summary"></div>
+        <a class="cta-btn" href="tel:+15047775117">📞 Call to Book — (504) 777-5117</a>
+        <div class="cta-sub">No obligation · We show up on time · Free re-wash if you're not 100% satisfied</div>
+        <div class="secondary-actions">
+          <button onclick="copyQuote()">Copy Quote</button>
+          <button onclick="resetForm()">New Quote</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let uploadedImageBase64 = null;
+    let uploadedImageType   = null;
+
+    // ── Photo upload handling ──────────────────────────────────────────────
+    const photoInput   = document.getElementById('photo-input');
+    const photoDrop    = document.getElementById('photo-drop');
+    const previewWrap  = document.getElementById('photo-preview-wrap');
+    const previewImg   = document.getElementById('photo-preview');
+    const aiNote       = document.getElementById('ai-photo-note');
+
+    photoInput.addEventListener('change', () => {
+      const file = photoInput.files[0];
+      if (file) loadPhoto(file);
+    });
+
+    document.getElementById('photo-clear').addEventListener('click', (e) => {
+      e.stopPropagation();
+      uploadedImageBase64 = null;
+      uploadedImageType   = null;
+      photoInput.value    = '';
+      previewWrap.style.display = 'none';
+      photoDrop.style.display   = 'block';
+      aiNote.style.display      = 'none';
+    });
+
+    // Drag and drop
+    photoDrop.addEventListener('dragover', (e) => { e.preventDefault(); photoDrop.classList.add('drag-over'); });
+    photoDrop.addEventListener('dragleave', () => photoDrop.classList.remove('drag-over'));
+    photoDrop.addEventListener('drop', (e) => {
+      e.preventDefault();
+      photoDrop.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) loadPhoto(file);
+    });
+
+    function loadPhoto(file) {
+      uploadedImageType = file.type;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        uploadedImageBase64 = dataUrl.split(',')[1]; // strip the "data:image/...;base64," prefix
+        previewImg.src = dataUrl;
+        previewWrap.style.display = 'block';
+        photoDrop.style.display   = 'none';
+        aiNote.style.display      = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ── Form submit ───────────────────────────────────────────────────────
+    document.getElementById('quote-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const checkedBoxes = [...document.querySelectorAll('input[type="checkbox"]:checked')];
+      const addOns = checkedBoxes.map(cb => cb.value).join(', ');
+
+      const data = {
+        serviceType:   document.getElementById('serviceType').value,
+        surfaceType:   document.getElementById('surfaceType').value,
+        surfaceSize:   document.getElementById('surfaceSize').value,
+        location:      document.getElementById('location').value,
+        addOns:        addOns,
+        imageBase64:   uploadedImageBase64 || null,
+        imageType:     uploadedImageType   || null
+      };
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      document.getElementById('loading').style.display  = 'block';
+      document.getElementById('loading-text').textContent = uploadedImageBase64
+        ? 'Analyzing your photo and calculating your quote…'
+        : 'Calculating your quote…';
+      document.getElementById('result').style.display   = 'none';
+      document.getElementById('error-msg').style.display = 'none';
+
+      try {
+        const response = await fetch('/get-quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error('Server error — please try again.');
+
+        const q = await response.json();
+
+        document.getElementById('price-amount').textContent = '$' + Number(q.price).toLocaleString();
+
+        // Surface condition (photo only)
+        const conditionBox  = document.getElementById('condition-box');
+        const conditionText = document.getElementById('condition-text');
+        if (uploadedImageBase64 && q.surfaceCondition) {
+          conditionText.textContent = q.surfaceCondition;
+          conditionBox.style.display = 'block';
+        } else {
+          conditionBox.style.display = 'none';
+        }
+
+        // What you get
+        const list = document.getElementById('includes-list');
+        list.innerHTML = '';
+        q.whatIsIncluded.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          list.appendChild(li);
+        });
+
+        document.getElementById('duration-value').textContent  = q.estimatedDuration;
+        document.getElementById('time-savings-text').textContent = q.timeSavings;
+        document.getElementById('cta-summary').textContent     = q.summary;
+
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+
+      } catch (err) {
+        const errEl = document.getElementById('error-msg');
+        errEl.textContent = err.message;
+        errEl.style.display = 'block';
+      } finally {
+        document.getElementById('loading').style.display = 'none';
+        btn.disabled = false;
+      }
+    });
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function copyQuote() {
+      const price    = document.getElementById('price-amount').textContent;
+      const includes = [...document.querySelectorAll('#includes-list li')].map(li => '• ' + li.textContent).join('\n');
+      const duration = document.getElementById('duration-value').textContent;
+      const summary  = document.getElementById('cta-summary').textContent;
+      const text = `SAMMY'S PRESSURE — QUOTE\n\nEstimate: ${price}\n\nWhat You Get:\n${includes}\n\nEstimated Duration: ${duration}\n\n${summary}\n\nCall to book: (504) 777-5117`;
+      navigator.clipboard.writeText(text).then(() => alert('Quote copied!'));
+    }
+
+    function resetForm() {
+      document.getElementById('quote-form').reset();
+      uploadedImageBase64 = null;
+      uploadedImageType   = null;
+      document.getElementById('photo-preview-wrap').style.display = 'none';
+      document.getElementById('photo-drop').style.display         = 'block';
+      document.getElementById('ai-photo-note').style.display      = 'none';
+      document.getElementById('result').style.display             = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>

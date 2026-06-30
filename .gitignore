@@ -1,0 +1,8 @@
+# Never upload the API key
+.env
+
+# Auto-generated — npm downloads these fresh from package.json
+node_modules/
+
+# Mac system file
+.DS_Store
